@@ -59,7 +59,7 @@ services:
     restart: always
     container_name: PostgresCont
     environment:
-      - POSTGRES_USER=ziakhan
+      - POSTGRES_USER=umairkhan
       - POSTGRES_PASSWORD=my_password
       - POSTGRES_DB=mydatabase
     ports:
@@ -72,7 +72,7 @@ services:
     restart: always
     container_name: PostgresProductsCont
     environment:
-      - POSTGRES_USER=ziakhan
+      - POSTGRES_USER=umairkhan
       - POSTGRES_PASSWORD=my_password
       - POSTGRES_DB=mydatabase
     ports:
@@ -85,7 +85,7 @@ services:
     restart: always
     container_name: PostgresInventoryCont
     environment:
-      - POSTGRES_USER=ziakhan
+      - POSTGRES_USER=umairkhan
       - POSTGRES_PASSWORD=my_password
       - POSTGRES_DB=mydatabase
     ports:

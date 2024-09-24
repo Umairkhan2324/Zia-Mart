@@ -3,7 +3,7 @@
 # Eg. Include ".env" in your `.gitignore` file.
 
 # This is the connection string for the main container Database URL
-DATABASE_URL=postgresql://ziakhan:my_password@postgres:5432/mydatabase
+DATABASE_URL=postgresql://umairkhan:my_password@postgres:5432/mydatabase
 
 
 

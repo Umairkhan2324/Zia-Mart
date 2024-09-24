@@ -1,105 +1,139 @@
-# main.py
 from contextlib import asynccontextmanager
 from typing import Annotated
 from sqlmodel import Session, SQLModel
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from typing import AsyncGenerator
 from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
 import asyncio
 import json
-
+import time 
 from app import settings
 from app.db_engine import engine
-from app.models.product_model import Product, ProductUpdate
-from app.crud.product_crud import add_new_product, get_all_products, get_product_by_id, delete_product_by_id, update_product_by_id
-from app.deps import get_session, get_kafka_producer
-from app.consumers.product_consumer import consume_messages
-from app.consumers.inventroy_consumer import consume_inventory_messages
-from app.hello_ai import chat_completion
+from app.models.user_model import User,UserPublic,UserPublicWithRole,UserCreate,Token 
+from app.crud.user_crud import create_user,user_login,CurrentUser,get_all_users,update_user,get_user_by_id
+from app.deps import get_session, GetProducer,DBSessionDep 
+from app.crud.admin_user import create_admin_user
 
 def create_db_and_tables() -> None:
     SQLModel.metadata.create_all(engine)
 
 
+
+
 # The first part of the function, before the yield, will
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    print("Creating ... ... ?? !!! ")
-
-    task = asyncio.create_task(consume_messages(
-        settings.KAFKA_PRODUCT_TOPIC, 'broker:19092'))
-    asyncio.create_task(consume_inventory_messages(
-        "AddStock",
-        'broker:19092'
-    ))
-
+    print("Creating table....")
     create_db_and_tables()
+    await create_admin_user()
     yield
 
 
 app = FastAPI(
     lifespan=lifespan,
-    title="Hello World API with DB",
+    title="User Service Management",
     version="0.0.1",
+    root_path="/user-service"
+    
 )
+
 
 
 @app.get("/")
 def read_root():
-    return {"Hello": "Product Service"}
+    return {"Hello": "user Service"}
 
 
-@app.post("/manage-products/", response_model=Product)
-async def create_new_product(product: Product, session: Annotated[Session, Depends(get_session)], producer: Annotated[AIOKafkaProducer, Depends(get_kafka_producer)]):
-    """ Create a new product and send it to Kafka"""
+@app.post("/register-user/", response_model=UserPublic)
+async def user_registration(user: UserCreate, session: DBSessionDep,producer:GetProducer):
+    """ Create a new user """
+    try:
+        new_user_registered = create_user(user_data=user,session=session)
+        if new_user_registered:
+            user_dict = {"username":new_user_registered.user_name,"email":new_user_registered.email,"phone":new_user_registered.phone,"full_name":new_user_registered.full_name}
+            user_json = json.dumps(user_dict).encode("utf-8")
+            print("User Json: ",user_json)
+            await producer.send_and_wait("user_registrations",user_json)
+        return new_user_registered
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-    product_dict = {field: getattr(product, field) for field in product.dict()}
-    product_json = json.dumps(product_dict).encode("utf-8")
-    print("product_JSON:", product_json)
-    # Produce message
-    await producer.send_and_wait(settings.KAFKA_PRODUCT_TOPIC, product_json)
-    # new_product = add_new_product(product, session)
-    return product
+    
+    
+    
 
-
-@app.get("/manage-products/all", response_model=list[Product])
-def call_all_products(session: Annotated[Session, Depends(get_session)]):
+@app.post("/user-login",response_model=Token)
+def login(form_data:Annotated[OAuth2PasswordRequestForm,Depends(OAuth2PasswordRequestForm)],session: Annotated[Session, Depends(get_session)]):
     """ Get all products from the database"""
-    return get_all_products(session)
-
-
-@app.get("/manage-products/{product_id}", response_model=Product)
-def get_single_product(product_id: int, session: Annotated[Session, Depends(get_session)]):
-    """ Get a single product by ID"""
     try:
-        return get_product_by_id(product_id=product_id, session=session)
+        access_token = user_login(form_data=form_data,session=session)
+        return access_token
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+# @app.post("/role-assign/", response_model=UserPublic)
+# def get_single_product(user_data:UserCreate,session:DBSessionDep):
+#     """ Get a single product by ID"""
+#     try:
+#         return role_assign_by_admin(user_data=user_data,session=session)
+#     except HTTPException as e:
+#         raise e
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get('/user/me',response_model=UserPublic)
+async def get_user_me(user:CurrentUser):
+    try:
+        return user
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+@app.get('/token-verify',response_model=UserPublicWithRole)
+async def token_verify(user:CurrentUser):
+    try:
+        return user
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+
+@app.get("/get-all-user",response_model=list[UserPublic])
+def all_user(users:Annotated[UserPublic,Depends(get_all_users)]):
+    try:
+        return users
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.patch("/user-update/",response_model=UserPublic)
+def user_update(user: Annotated[UserPublic, Depends(update_user)]):
+    """ Update a single user inforamtion like email etc."""
+    try:
+        return user
     except HTTPException as e:
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.delete("/manage-products/{product_id}", response_model=dict)
-def delete_single_product(product_id: int, session: Annotated[Session, Depends(get_session)]):
-    """ Delete a single product by ID"""
+@app.get("/get-user-by-id",response_model=UserPublic)
+def user_by_id(user_id:int,session:DBSessionDep):
     try:
-        return delete_product_by_id(product_id=product_id, session=session)
+        return get_user_by_id(id=user_id,session=session)
     except HTTPException as e:
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-@app.patch("/manage-products/{product_id}", response_model=Product)
-def update_single_product(product_id: int, product: ProductUpdate, session: Annotated[Session, Depends(get_session)]):
-    """ Update a single product by ID"""
-    try:
-        return update_product_by_id(product_id=product_id, to_update_product_data=product, session=session)
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/hello-ai")
-def get_ai_response(prompt:str):
-    return chat_completion(prompt)
