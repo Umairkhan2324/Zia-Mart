@@ -5,7 +5,7 @@ from app.crud.product_crud import add_new_product, get_all_products, get_product
 from app.deps import get_session
 
 
-async def consume_messages(topic, bootstrap_servers):
+async def consume_product_messages(topic, bootstrap_servers):
     # Create a consumer instance.
     consumer = AIOKafkaConsumer(
         topic,

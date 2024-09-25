@@ -32,21 +32,39 @@ def delete_product_by_id(product_id: int, session: Session):
     session.delete(product)
     session.commit()
     return {"message": "Product Deleted Successfully"}
+def category_by_name(category_name:str,session:Session):
+    category = session.exec(select(Category).where(Category.category_name==category_name)).one_or_none()
+    if category is not None:
+        return category 
+    else: 
+        add_new_category = Category(category_name=category_name)
+        session.add(add_new_category)
+        session.commit()
+        session.refresh(add_new_category)
+        return add_new_category
+    
+def category_by_id(category_id:int,session:Session):
+    category = session.exec(select(Category).where(Category.id==category_id)).one_or_none()
+    if not category:
 
-# Update Product by ID
-def update_product_by_id(product_id: int, to_update_product_data:ProductUpdate, session: Session):
-    # Step 1: Get the Product by ID
-    product = session.exec(select(Product).where(Product.id == product_id)).one_or_none()
-    if product is None:
-        raise HTTPException(status_code=404, detail="Product not found")
-    # Step 2: Update the Product
-    hero_data = to_update_product_data.model_dump(exclude_unset=True)
-    product.sqlmodel_update(hero_data)
-    session.add(product)
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    return category
+    
+def all_category(session:Session):
+    categories = session.exec(select(Category)).all()
+    return categories 
+
+def category_delete_by_id(category_id:int,session:Session):
+    category = session.exec(select(Category).where(Category.id==category_id)).one_or_none()
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    session.delete(category)
     session.commit()
-    return product
-
+    return {"message":"Category Deleted Successfully"}
+        
 # Validate Product by ID
 def validate_product_by_id(product_id: int, session: Session) -> Product | None:
     product = session.exec(select(Product).where(Product.id == product_id)).one_or_none()
-    return product
+    return product    
+ 
