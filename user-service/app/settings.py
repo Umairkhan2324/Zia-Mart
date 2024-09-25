@@ -15,3 +15,12 @@ KAFKA_CONSUMER_GROUP_ID_FOR_PRODUCT = config("KAFKA_CONSUMER_GROUP_ID_FOR_PRODUC
 TEST_DATABASE_URL = config("TEST_DATABASE_URL", cast=Secret)
 
 OPENAI_API_KEY = config("OPENAI_API_KEY", cast=Secret)
+
+
+USERNAME = config("USERNAME", cast=str)
+EMAIL = config("EMAIL", cast=str)
+FULLNAME = config("FULLNAME", cast=str)
+PASSWORD = config("PASSWORD", cast=str)
+PHONE = config("PHONE", cast=str)
+FIRST_NAME = config("FIRSTNAME", cast=str)
+LAST_NAME = config("LASTNAME", cast=str)

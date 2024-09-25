@@ -12,6 +12,7 @@ class User(SQLModel, table=True):
     hashed_password: str
     role: Role = Field(default=Role.customer)
     phone: str | None = None
+    full_name: str | None = None
     first_name: str | None = None
     last_name: str | None = None
     # rating: list["ProductRating"] = Relationship(back_populates="product")
@@ -41,6 +42,7 @@ class UserUpdate(SQLModel):
     username: str | None = None
     email: str | None = None
     phone: str | None = None
+    full_name: str | None = None
     first_name: str | None = None
     last_name: str | None = None
     
