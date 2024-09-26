@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Status Notification</title>
+</head>
+<body>
+    <p>Dear {{ full_name }},</p>
+
+    <p>We are pleased to inform you that your payment status is as follows:</p>
+
+    <ul>
+        <li><strong>Order Number:</strong> {{ order_number }}</li>
+        <li><strong>Payment Status:</strong> {{ payment_status }}</li>
+    </ul>
+
+    {% if payment_status == 'COMPLETED' %}
+        <p>Your payment has been successfully completed. Thank you for your purchase! Your order will be processed and shipped shortly.</p>
+    {% elif payment_method == 'COD' %}
+        <p>Your order has been placed with Cash on Delivery (COD) as the payment method. Please ensure that you have the exact amount ready at the time of delivery.</p>
+    {% elif payment_status == 'FAILED' %}
+        <p>Unfortunately, your payment attempt has failed. Please try again or use a different payment method to complete your purchase.</p>
+    {% endif %}
+
+    <p>We will notify you once your order is shipped.</p>
+
+    <p>Best regards,</p>
+    <p>The {{ app_name }} Team</p>
+</body>
+</html>

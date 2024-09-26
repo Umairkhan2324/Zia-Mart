@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to {{ app_name }}</title>
+</head>
+<body>
+    <p>Dear {{ full_name }},</p>
+
+    <p>Welcome to {{ app_name }}! Thank you for registering with us. We're excited to have you on board.</p>
+
+    <p>Here are your registration details:</p>
+
+    <ul>
+        <li><strong>Full Name:</strong> {{ full_name }}</li>
+        <li><strong>Username:</strong> {{ username }}</li>
+        <li><strong>Email:</strong> {{ email }}</li>
+        <li><strong>Phone:</strong> {{ phone }}</li>
+    </ul>
+
+    <p>You can now explore our wide range of products and enjoy exclusive deals.</p>
+
+    <p>Best regards,</p>
+    <p>The {{ app_name }} Team</p>
+</body>
+</html>

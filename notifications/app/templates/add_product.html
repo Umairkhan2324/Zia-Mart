@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Product Added Notification</title>
+</head>
+<body>
+    <p>Dear {{ full_name }},</p>
+
+    <p>We are delighted to inform you that the product "{{ product_name }}" has been successfully added to your store.</p>
+
+    <p>Kindly update your inventory accordingly. Below are the details of the newly added product:</p>
+
+    <p><strong>Product Details:</strong></p>
+    <ul>
+        <li><strong>Product ID:</strong> {{ product_id }}</li>
+        <li><strong>Product Name:</strong> {{ product_name }}</li>
+    </ul>
+
+    <p>Thank you for your attention to this matter.</p>
+
+    <p>Best regards,</p>
+    <p>The {{ app_name }} Team</p>
+</body>
+</html>

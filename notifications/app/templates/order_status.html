@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status Update</title>
+</head>
+<body>
+    <p>Dear {{ full_name }},</p>
+
+    <p>Your order with the number <strong>{{ order_number }}</strong> is currently <strong>{{ order_status }}</strong>.</p>
+
+    {% if order_status == "process" %}
+        <p>We are preparing your items and will notify you once they are ready for shipping.</p>
+    {% elif order_status == "shipped" %}
+        <p>Your order has been shipped. You can expect to receive it soon. We will provide tracking information if available.</p>
+    {% elif order_status == "delivered" %}
+        <p>Your order has been delivered. We hope you enjoy your purchase!</p>
+    {% elif order_status == "cancelled" %}
+        <p>Your order has been cancelled. If you have any questions, please contact our support team.</p>
+    {% elif order_status == "returned" %}
+        <p>Your order has been refunded. The amount will be credited back to your original payment method shortly.</p>
+    {% endif %}
+
+    <p>Thank you for shopping with us.</p>
+
+    <p>Best regards,</p>
+    <p>The {{ app_name }} Team</p>
+</body>
+</html>

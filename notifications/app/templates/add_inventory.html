@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Update Notification</title>
+</head>
+<body>
+    <p>Dear {{ full_name }},</p>
+
+    <p>We are pleased to inform you that the inventory has been successfully updated in your store.</p>
+
+    <p>Below are the details of the product with the updated quantity:</p>
+
+    <ul>
+        <li><strong>Product ID:</strong> {{ product_id }}</li>
+        <!-- Optional: Uncomment the line below to include the product name -->
+        <!-- <li><strong>Product Name:</strong> {{ product_name }}</li> -->
+        <li><strong>Updated Quantity:</strong> {{ quantity }}</li>
+    </ul>
+
+    <p>Thank you for your prompt attention to this matter.</p>
+
+    <p>Best regards,</p>
+    <p>The {{ app_name }} Team</p>
+</body>
+</html>

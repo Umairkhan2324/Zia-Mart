@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+</head>
+<body>
+    <p>Dear {{ full_name }},</p>
+
+    <p>Thank you for your order! Your order <strong>{{ order_number }}</strong> has been successfully placed.</p>
+
+    <p><strong>Order Details:</strong></p>
+    <ul>
+        <li><strong>Order Number:</strong> {{ order_number }}</li>
+        <li><strong>Total Amount:</strong> {{ total_amount }}</li>
+        <li><strong>Payment Status:</strong> {{ payment_status }}</li>
+        <li><strong>Order Status:</strong> {{ order_status }}</li>
+    </ul>
+
+    <p>We will notify you once your order is shipped.</p>
+
+    <p>Best regards,</p>
+    <p>The {{ app_name }} Team</p>
+</body>
+</html>
