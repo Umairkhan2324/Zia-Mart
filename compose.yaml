@@ -1,31 +1,18 @@
 name: ai-mart-platform
 
 services:
-  api:
-    image: todo-mart-api
+  user-service:
+    image: user-mart-api
     build:
-      context: ./todo
+      context: ./user-service
       dockerfile: Dockerfile.dev
-    restart: always # Any Issue when RUnning Contianer = ShutDown
     volumes:
-      - ./todo:/code # Sync local development directory with the container
+      - ./user-service:/code # Sync local development directory with the container
     depends_on:
-      - postgres_db
       - broker
+      - postgres_user_db
     ports:
       - "8000:8000" # Expose container port 8000 to host port 8000
-
-  api2:
-    image: ms2-mart-api
-    build:
-      context: ./microservice_02
-      dockerfile: Dockerfile.dev
-    volumes:
-      - ./microservice_02:/code # Sync local development directory with the container
-    depends_on:
-      - broker
-    ports:
-      - "8002:8000" # Expose container port 8000 to host port 8000
 
   product-service:
     image: product-mart-api
@@ -39,7 +26,6 @@ services:
       - postgres_product_db
     ports:
       - "8005:8000" # Expose container port 8000 to host port 8000
-
   inventory-service:
     image: inventory-mart-api
     build:
@@ -53,13 +39,25 @@ services:
     ports:
       - "8006:8000" # Expose container port 8000 to host port 8000
 
+  notifications:
+    image: notifications-mart-api
+    build:
+      context: ./notifications
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./notifications:/code # Sync local development directory with the container
+    depends_on:
+      - broker
+    ports:
+      - "8007:8000" # Expose container port 8000 to host port 8000
+
 
   postgres_db:
     image: postgres:latest # Use the official PostgreSQL image
     restart: always
     container_name: PostgresCont
     environment:
-      - POSTGRES_USER=umairkhan
+      - POSTGRES_USER=ziakhan
       - POSTGRES_PASSWORD=my_password
       - POSTGRES_DB=mydatabase
     ports:
@@ -67,12 +65,25 @@ services:
     volumes:
       - postgres_db:/var/lib/postgresql/data
 
+  postgres_user_db:
+    image: postgres:latest # Use the official PostgreSQL image
+    restart: always
+    container_name: PostgresUserCont
+    environment:
+      - POSTGRES_USER=ziakhan
+      - POSTGRES_PASSWORD=my_password
+      - POSTGRES_DB=mydatabase
+    ports:
+      - "5483:5432"
+    volumes:
+      - postgres_user_db:/var/lib/postgresql/data
+
   postgres_product_db:
     image: postgres:latest # Use the official PostgreSQL image
     restart: always
     container_name: PostgresProductsCont
     environment:
-      - POSTGRES_USER=umairkhan
+      - POSTGRES_USER=ziakhan
       - POSTGRES_PASSWORD=my_password
       - POSTGRES_DB=mydatabase
     ports:
@@ -85,7 +96,7 @@ services:
     restart: always
     container_name: PostgresInventoryCont
     environment:
-      - POSTGRES_USER=umairkhan
+      - POSTGRES_USER=ziakhan
       - POSTGRES_PASSWORD=my_password
       - POSTGRES_DB=mydatabase
     ports:
@@ -134,6 +145,8 @@ volumes:
   postgres_product_db:
     driver: local
   postgres_inventory_db:
+    driver: local
+  postgres_user_db:
     driver: local
 
 networks:

@@ -10,7 +10,7 @@ import json
 import time 
 from app import settings
 from app.db_engine import engine
-from app.models.user_model import User,UserPublic,UserPublicWithRole,UserCreate,Token 
+from app.models.user_model import User,UserPublic,UserPublicWithRole,UserCreate,Token
 from app.crud.user_crud import create_user,user_login,CurrentUser,get_all_users,update_user,get_user_by_id
 from app.deps import get_session, GetProducer,DBSessionDep 
 from app.crud.admin_user import create_admin_user
@@ -65,7 +65,7 @@ async def user_registration(user: UserCreate, session: DBSessionDep,producer:Get
     
     
 
-@app.post("/user-login",response_model=Token)
+@app.post("/user-login", response_model=Token)
 def login(form_data:Annotated[OAuth2PasswordRequestForm,Depends(OAuth2PasswordRequestForm)],session: Annotated[Session, Depends(get_session)]):
     """ Get all products from the database"""
     try:

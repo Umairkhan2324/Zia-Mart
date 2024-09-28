@@ -1,9 +1,16 @@
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field, Relationship,Column,VARCHAR
+from pydantic import EmailStr
+from datetime import datetime,timedelta,timezone
 import enum
-
 class Role(str,enum.Enum):
     admin = "admin"
     customer = "customer"
+
+class BaseUser(SQLModel):
+    user_name: str = Field(index=True,unique=True)
+    full_name: str 
+    email: EmailStr = Field(sa_column=Column("email", VARCHAR, unique=True))
+    phone: str 
 
 class User(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -50,3 +57,15 @@ class UserUpdate(SQLModel):
     email: str | None = None
     full_name: str | None = None 
     phone: str | None = None 
+class UserPublic(BaseUser):
+    id: int 
+    created_at: datetime
+    updated_at: datetime
+
+class UserCreate(BaseUser):
+    password: str
+
+class Token(SQLModel):
+    access_token: str 
+    token_type: str = "bearer"
+    expires_in: int 

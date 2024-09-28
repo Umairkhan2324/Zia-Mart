@@ -61,7 +61,6 @@ async def create_new_product(
     producer: GetProducerDeps,
     user:CurrentUserDeps,
     product: ProductCreate = Depends(), 
-    files:List[UploadFile]=File(...)
     
     ):
 
